@@ -1,9 +1,13 @@
 import numpy as np
-from brkga_mp_ipr.types import BaseChromosome
-from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
-from pymoo.optimize import minimize
+from brkga_mp_ipr.types import BaseChromosome, BrkgaParams
+from brkga_mp_ipr.algorithm import BrkgaMpIpr
+from brkga_mp_ipr.enums import Sense
+from brkga_mp_ipr.types_io import load_configuration
 import csv
 import random
+
+from poke_decoder import PokeDecoder
+from poke_instance import PokeInstance
 from pokemon import Pokemon
 
 NAME = 1
@@ -15,66 +19,63 @@ DEFE = 7
 SPEED = 10
 teamA = []
 teamB = []
+configuration_file = 'config.conf'
+seed = 2
+chromosome_size = 3
+num_generations = 300
 
-class Problem:
-    def __init__(self):
-        pass
-
-
-pokeList = list()
+#pokeList = list()
 #firstLineIgnored = False
 
 
 def runBRKGA():
-    for i in range(3):
-        teamA.append(pokeList[random.randint(0, len(pokeList))])
-        teamB.append(pokeList[random.randint(0, len(pokeList))])
-    for i, _poke in enumerate(teamA):
-        print(_poke.name+" vs "+teamB[i].name)
-    # algorithm = BRKGA(
-    #     n_elites=200,
-    #     n_offsprings=700,
-    #     n_mutants=100,
-    #     bias=0.7)
-    #
-    # res = minimize(problem,
-    #                algorithm,
-    #                ("n_gen", 75),
-    #                seed=1,
-    #                verbose=False)
-    # return res
 
-def readPokemonFile():
+    print("Reading data...")
+    instance = PokeInstance('pokemon.csv')
 
-    with open('pokemon.csv', newline='') as pokemonFile:
-        firstLineIgnored = False
-        pokeInfo = csv.reader(pokemonFile)
-        for poke in pokeInfo:
-            #Lista com todas as infos do pokemon
-            if(firstLineIgnored):
-                pokeList.append(Pokemon(poke[NAME], int(poke[HP]), int(poke[ATK]), int(poke[DEFE]), int(poke[SPEED]), [poke[TYPE1], poke[TYPE2]]))
-            else:
-                firstLineIgnored = True
-        #print(pokeList[2].types + pokeList[3].types)
+    print("Reading parameters...")
+    brkga_params, _ = load_configuration(configuration_file)
 
-def readChartFile():
-    with open('chart.csv', newline='') as chartFile:
-        chartInfo = csv.reader(chartFile)
-        # for chartRow in chartInfo:
-        #     print(chartRow)
+    print("Building BRKGA data and initializing...")
+    decoder = PokeDecoder(instance)
 
-#only attacking(cp2) pokemon is modified by multiplier
-def battle(cp1, cp2):
-    battleResult = 0.0
-    for pokeA in teamA:
-        for pokeB in teamB:
-            battleResult += pokeB.calculateCP() - pokeA.calculateCP()
-    return battleResult
+    brkga = BrkgaMpIpr(
+        decoder=decoder,
+        sense=Sense.MAXIMIZE,
+        seed=seed,
+        chromosome_size=chromosome_size,
+        params=brkga_params
+    )
 
-#dado um timeA, qual melhor time para enfrenta-lo
-#uma solucao do problema é o resultado de uma batalha(CP resultante)
-def decode(self, chromosome: BaseChromosome, rewrite: bool) -> float:
-    #construir lista de listas com cromossomo(random key) e pokemon(talvez cp dele)
-    # retornar como fitness o resultado da batalha
-    #CP after battle
-    pass
+    # NOTE: don't forget to initialize the algorithm.
+    brkga.initialize()
+
+    ########################################
+    # Find good solutions / evolve
+    ########################################
+
+    print(f"Evolving {num_generations} generations...")
+    brkga.evolve(num_generations)
+
+    best_cost = brkga.get_best_fitness()
+    print(f"Best cost: {best_cost}")
+
+
+# def readPokemonFile():
+#
+#     with open('pokemon.csv', newline='') as pokemonFile:
+#         firstLineIgnored = False
+#         pokeInfo = csv.reader(pokemonFile)
+#         for poke in pokeInfo:
+#             #Lista com todas as infos do pokemon
+#             if(firstLineIgnored):
+#                 pokeList.append(Pokemon(poke[NAME], int(poke[HP]), int(poke[ATK]), int(poke[DEFE]), int(poke[SPEED]), [poke[TYPE1], poke[TYPE2]]))
+#             else:
+#                 firstLineIgnored = True
+
+
+# def readChartFile():
+#     with open('chart.csv', newline='') as chartFile:
+#         chartInfo = csv.reader(chartFile)
+#         for chartRow in chartInfo:
+#             print(chartRow)
