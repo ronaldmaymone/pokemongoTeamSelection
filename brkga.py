@@ -5,6 +5,7 @@ from brkga_mp_ipr.enums import Sense
 from brkga_mp_ipr.types_io import load_configuration
 import csv
 import random
+import time
 
 from poke_decoder import PokeDecoder
 from poke_instance import PokeInstance
@@ -47,6 +48,7 @@ def runBRKGA():
         params=brkga_params
     )
 
+    start = time.perf_counter()
     # NOTE: don't forget to initialize the algorithm.
     brkga.initialize()
 
@@ -58,7 +60,9 @@ def runBRKGA():
     brkga.evolve(num_generations)
 
     best_cost = brkga.get_best_fitness()
+    end = time.perf_counter()
     print(f"Best cost: {best_cost}")
+    print(f"Time elapsed: {end - start:0.4f}")
 
 
 # def readPokemonFile():
@@ -74,8 +78,8 @@ def runBRKGA():
 #                 firstLineIgnored = True
 
 
-# def readChartFile():
-#     with open('chart.csv', newline='') as chartFile:
-#         chartInfo = csv.reader(chartFile)
-#         for chartRow in chartInfo:
-#             print(chartRow)
+def readChartFile():
+    with open('chart.csv', newline='') as chartFile:
+        chartInfo = csv.reader(chartFile)
+        for chartRow in chartInfo:
+            print(chartRow)
