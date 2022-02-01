@@ -62,7 +62,7 @@ class PokeInstance():
         for pokeA in self.teamA:
             for pokeB in teamB:
                 typeMultiplier = self.findBestMultiplier(pokeA.types, pokeB.types)
-                battleResult += (pokeB.calculateCP() * typeMultiplier) - pokeA.calculateCP()
+                battleResult += (pokeB.cp * typeMultiplier) - pokeA.cp
         return battleResult
 
     def findBestMultiplier(self, typesA, typesB) -> float:

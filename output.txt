@@ -1,2 +1,2 @@
-Fitness Mean: 32584.0068. Fitness Std Deviation: 5355.4922
-Time mean: 0.8411. Time Std Deviation: 0.0431
+Fitness Mean: 32242.7635. Fitness Std Deviation: 4555.7977
+Time mean: 0.7919. Time Std Deviation: 0.0468
