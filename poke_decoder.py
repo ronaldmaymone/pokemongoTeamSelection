@@ -11,7 +11,6 @@ class PokeDecoder():
         self.instance = instance
 
     def decode(self, chromosome: BaseChromosome, rewrite: bool) -> float:
-        # print(len(self.instance.pokeList))
         teamB = []
         # procurar na lista de pokemon cada gene.
         for gene in chromosome:

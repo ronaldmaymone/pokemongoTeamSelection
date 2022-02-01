@@ -11,6 +11,8 @@ TYPE2 = 3
 HP = 5
 ATK = 6
 DEFE = 7
+SPEED_ATK = 8
+SPEED_DEF = 9
 SPEED = 10
 #teamA = []
 # teamB = []
@@ -35,7 +37,7 @@ class PokeInstance():
                 if firstLineIgnored:
                     # pokeList é a lista de objetos Pokemon
                     pokemon = Pokemon(poke_info[NAME], int(poke_info[HP]), int(poke_info[ATK]), int(poke_info[DEFE]),
-                                      int(poke_info[SPEED]),
+                                      int(int(poke_info[SPEED]) + int(poke_info[SPEED_DEF]) + int(poke_info[SPEED_ATK])),
                                       [poke_info[TYPE1], poke_info[TYPE2]])
                     pokemon.id = poke_id
                     self.pokeList.append(pokemon)
@@ -53,10 +55,10 @@ class PokeInstance():
             chartInfo = csv.reader(chartFile)
             for chartRow in chartInfo:
                 self.typesMatrix.append(chartRow)
+
     # only attacking(cp2) pokemon is modified by multiplier
     def battle(self, teamB) -> float:
         battleResult = 0.0
-        typeMultiplier = 0.0
         for pokeA in self.teamA:
             for pokeB in teamB:
                 typeMultiplier = self.findBestMultiplier(pokeA.types, pokeB.types)
