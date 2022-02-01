@@ -1,15 +1,10 @@
-import numpy as np
-from brkga_mp_ipr.types import BaseChromosome, BrkgaParams
 from brkga_mp_ipr.algorithm import BrkgaMpIpr
 from brkga_mp_ipr.enums import Sense
 from brkga_mp_ipr.types_io import load_configuration
 import csv
-import random
 import time
-
 from poke_decoder import PokeDecoder
 from poke_instance import PokeInstance
-from pokemon import Pokemon
 
 NAME = 1
 TYPE1 = 2
@@ -21,23 +16,20 @@ SPEED = 10
 teamA = []
 teamB = []
 configuration_file = 'config.conf'
-seed = 2
+seed = 22
 chromosome_size = 3
-num_generations = 300
-
-#pokeList = list()
-#firstLineIgnored = False
+num_generations = 20
 
 
-def runBRKGA():
+def runBRKGA() -> (float, float):
 
-    print("Reading data...")
+    #print("Reading data...")
     instance = PokeInstance('pokemon.csv')
 
-    print("Reading parameters...")
+    #print("Reading parameters...")
     brkga_params, _ = load_configuration(configuration_file)
 
-    print("Building BRKGA data and initializing...")
+    #print("Building BRKGA data and initializing...")
     decoder = PokeDecoder(instance)
 
     brkga = BrkgaMpIpr(
@@ -56,13 +48,14 @@ def runBRKGA():
     # Find good solutions / evolve
     ########################################
 
-    print(f"Evolving {num_generations} generations...")
+    #print(f"Evolving {num_generations} generations...")
     brkga.evolve(num_generations)
 
     best_cost = brkga.get_best_fitness()
     end = time.perf_counter()
-    print(f"Best cost: {best_cost}")
-    print(f"Time elapsed: {end - start:0.4f}")
+    #print(f"Best cost: {best_cost}")
+    #print(f"Time elapsed: {end - start:0.4f}")
+    return round(best_cost, 4), round(end - start, 4)
 
 
 # def readPokemonFile():
